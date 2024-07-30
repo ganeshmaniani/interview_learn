@@ -24,6 +24,7 @@ class _TeacherLoginState extends State<TeacherLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 244, 240, 240),
         key: _scaffoldKey,
         appBar: AppBar(title: const Text('Teacher Login')),
         body: BlocConsumer<AuthCubit, AuthState>(
@@ -33,7 +34,7 @@ class _TeacherLoginState extends State<TeacherLogin> {
               child: Form(
                   key: _formKey,
                   child: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomTextFormField(
@@ -51,10 +52,10 @@ class _TeacherLoginState extends State<TeacherLogin> {
                             BlocProvider.of<AuthCubit>(context)
                                 .loginTecher(teacherModel);
                           },
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(color: Colors.white),
-                          )),
+                          child: state is AuthLoading
+                              ? CircularProgressIndicator()
+                              : const Text('Login',
+                                  style: TextStyle(color: Colors.white))),
                       const Text('or'),
                       CustomButton(
                           onTap: () {

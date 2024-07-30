@@ -46,20 +46,18 @@ class _AddStudentPageState extends State<AddStudentPage> {
                   child: Column(
                     children: [
                       if (state is AuthProfile)
-                        Container(
-                          height: 70,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: Colors.grey,
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  image: MemoryImage(state.imageByte))),
+                        GestureDetector(
+                          onTap: () => pickImage(),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: MemoryImage(state.imageByte),
+                          ),
                         )
                       else
                         GestureDetector(
                           onTap: () => pickImage(),
                           child: Container(
-                            height: 70,
+                            height: 80,
                             alignment: Alignment.center,
                             decoration: const BoxDecoration(
                               color: Colors.grey,
@@ -210,7 +208,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
       setState(() {
         selectedProfile = _selectedProfile;
       });
-      BlocProvider.of<AuthCubit>(context).pickImage(selectedProfile);
+      BlocProvider.of<AuthCubit>(context).pickRegisterImage(selectedProfile);
     }
   }
 

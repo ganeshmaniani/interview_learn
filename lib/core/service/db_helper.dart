@@ -22,6 +22,7 @@ class DataBaseHelper {
         )''';
     String studentTable =
         '''CREATE TABLE student_table(id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id INTEGER NOT NULL,
         name TEXT NOT NULL,
         age TEXT NOT NULL,
         email TEXT NOT NULL,

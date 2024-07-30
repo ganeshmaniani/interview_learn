@@ -68,7 +68,21 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  pickImage(XFile? file) async {
+  updateStudent(StudentModel studentModel) async {
+    emit(StudentEditButtonLoading());
+    try {
+      int response = await authRepository.studentEdit(studentModel);
+      if (response != null) {
+        emit(StudentEditSuccess());
+      } else {
+        emit(StudentEditFailure(errorMessage: 'Student Cannot Updated'));
+      }
+    } catch (e) {
+      emit(StudentEditFailure(errorMessage: e.toString()));
+    }
+  }
+
+  pickRegisterImage(XFile? file) async {
     if (file == null) {
       emit(AuthProfileFailure(errorMessage: "No image selected"));
       return;
@@ -76,6 +90,19 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       Uint8List imageBytes = await file.readAsBytes();
       emit(AuthProfile(imageByte: imageBytes));
+    } catch (e) {
+      emit(AuthProfileFailure(errorMessage: "Failed to process image: $e"));
+    }
+  }
+
+  pickEditImage(XFile? file) async {
+    if (file == null) {
+      emit(EditProfileFailure(errorMessage: "No image selected"));
+      return;
+    }
+    try {
+      Uint8List imageBytes = await file.readAsBytes();
+      emit(EditProfileImage(imageByte: imageBytes));
     } catch (e) {
       emit(AuthProfileFailure(errorMessage: "Failed to process image: $e"));
     }

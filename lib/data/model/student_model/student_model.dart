@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 class StudentModel {
   int? id;
+
   String? name;
   String? age;
   String? email;

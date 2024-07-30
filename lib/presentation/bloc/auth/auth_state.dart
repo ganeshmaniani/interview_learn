@@ -33,3 +33,28 @@ class AuthProfileFailure extends AuthState {
   @override
   List<Object?> get props => [errorMessage];
 }
+
+class StudentEditButtonLoading extends AuthState {}
+
+class StudentEditSuccess extends AuthState {}
+
+class StudentEditFailure extends AuthState {
+  final String errorMessage;
+  StudentEditFailure({required this.errorMessage});
+  @override
+  List<Object?> get props => [errorMessage];
+}
+
+class EditProfileImage extends AuthState {
+  final Uint8List imageByte;
+  EditProfileImage({required this.imageByte});
+  @override
+  List<Object?> get props => [imageByte];
+}
+
+class EditProfileFailure extends AuthState {
+  final String errorMessage;
+  EditProfileFailure({required this.errorMessage});
+  @override
+  List<Object?> get props => [errorMessage];
+}

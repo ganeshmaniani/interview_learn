@@ -8,17 +8,24 @@ import '../../model/student_model/student_model.dart';
 
 class HomeRepository {
   final BaseDBService networkService = NetWorkDBService();
-  Future<TeacherModel> getTeacherDetail() async {
+  Future<TeacherModel> getTeacherDetail(dynamic id) async {
     try {
       TeacherModel teacherModel = TeacherModel();
       List<Map<String, dynamic>> response =
-          await networkService.getData('teacher_table');
+          await networkService.getDataById('teacher_table', id);
       if (response.isEmpty) {
         return teacherModel;
       } else {
-        List<TeacherModel> teacherList =
-            response.map((e) => TeacherModel.fromJson(e)).toList();
-        return teacherList.first;
+        for (var res in response) {
+          teacherModel.id = res['id'];
+          teacherModel.name = res['name'];
+          teacherModel.email = res['email'];
+          teacherModel.age = res['age'];
+          teacherModel.gender = res['gender'];
+          teacherModel.profileImage = res['profile_image'];
+          teacherModel.password = res['password'];
+        }
+        return teacherModel;
       }
     } catch (e) {
       log(e.toString());
@@ -27,10 +34,10 @@ class HomeRepository {
     }
   }
 
-  Future<List<StudentModel>> getStudentList() async {
+  Future<List<StudentModel>> getStudentList(dynamic id) async {
     try {
       List<Map<String, dynamic>> response =
-          await networkService.getData('student_table');
+          await networkService.getStudentDataById('student_table', id);
       if (response.isEmpty) {
         return [];
       } else {
@@ -59,7 +66,7 @@ class HomeRepository {
     }
   }
 
-  Future<StudentModel> getSingleTeacherDetail(dynamic id) async {
+  Future<StudentModel> getSingleStudentDetail(dynamic id) async {
     StudentModel studentModel = StudentModel();
     try {
       List<Map<String, dynamic>> response =
@@ -82,6 +89,29 @@ class HomeRepository {
     } catch (e) {
       log(e.toString());
       return studentModel;
+    }
+  }
+
+  Future<int> updateTeacher(TeacherModel teacherModel) async {
+    try {
+      Map<String, dynamic> data = {
+        'id': teacherModel.id,
+        'name': teacherModel.name,
+        'email': teacherModel.email,
+        'age': teacherModel.age,
+        'profile_image': teacherModel.profileImage,
+        'password': teacherModel.password
+      };
+      int response = await networkService.updateData('teacher_table', data);
+
+      if (response != null) {
+        return response;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      log(e.toString());
+      return 0;
     }
   }
 }

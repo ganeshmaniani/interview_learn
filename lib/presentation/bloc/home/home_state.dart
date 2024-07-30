@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 import 'package:interview_learn_process/data/model/student_model/student_model.dart';
 import 'package:interview_learn_process/data/model/teacher_model/teacher_model.dart';
@@ -46,3 +48,18 @@ class StudentDetail extends HomeState {
   @override
   List<Object?> get props => [studentModel];
 }
+
+class EditSuccess extends HomeState {}
+
+class EditFailure extends HomeState {}
+
+class EditProfile extends HomeState {
+  final Uint8List imageByte;
+  EditProfile({required this.imageByte});
+  @override
+  List<Object?> get props => [imageByte];
+}
+
+class DeleteSuccess extends HomeState {}
+
+class DeleteFalure extends HomeState {}

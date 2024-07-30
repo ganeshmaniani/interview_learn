@@ -48,6 +48,12 @@ class NetWorkDBService extends BaseDBService {
   @override
   Future getDataById(table, itemId) async {
     var connection = await database;
-    return await connection!.query(table,where: 'id = ?',whereArgs:[itemId] );
+    return await connection!.query(table, where: 'id = ?', whereArgs: [itemId]);
+  }
+
+  @override
+  Future getStudentDataById(table, itemId) async {
+    var connection = await database;
+    return await connection!.query(table,where: 'teacher_id = ?',whereArgs: [itemId]);
   }
 }

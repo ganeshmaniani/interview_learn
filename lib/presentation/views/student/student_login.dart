@@ -23,6 +23,8 @@ class _StudentLoginState extends State<StudentLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor:
+            const Color.fromARGB(255, 252, 250, 250).withOpacity(0.9),
         key: _scaffoldKey,
         appBar: AppBar(title: const Text('Student Login')),
         body: BlocConsumer<AuthCubit, AuthState>(
@@ -50,10 +52,12 @@ class _StudentLoginState extends State<StudentLogin> {
                             BlocProvider.of<AuthCubit>(context)
                                 .studentLogin(studentModel);
                           },
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(color: Colors.white),
-                          )),
+                          child: state is AuthLoading
+                              ? const CircularProgressIndicator()
+                              : const Text(
+                                  'Login',
+                                  style: TextStyle(color: Colors.white),
+                                )),
                     ],
                   )),
             );
@@ -63,10 +67,11 @@ class _StudentLoginState extends State<StudentLogin> {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   backgroundColor: Colors.green,
                   content: Text('Login Successfully..')));
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const StudentViewPage()));
+                      builder: (context) => const StudentViewPage()),
+                  (route) => false);
             }
             if (state is AuthFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -37,11 +37,10 @@ class AuthRepository {
     try {
       List<Map<String, dynamic>> respone =
           await networkService.getData('teacher_table');
-
+      log(respone.toString());
       if (respone.isEmpty) {
         return false;
       } else {
-        bool isValid = false;
         for (var res in respone) {
           if (res['email'] == teacherModel.email &&
               res["password"] == teacherModel.password) {
@@ -49,14 +48,12 @@ class AuthRepository {
             SharedPreferences preferences =
                 await SharedPreferences.getInstance();
             await preferences.setInt("TeacherId", loggedInTeacher.id!);
-            isValid = true;
 
             log('Teacher ID saved: ${loggedInTeacher.id.toString()}');
-          } else {
-            isValid = false;
+            return true;
           }
         }
-        return isValid;
+        return false;
       }
     } catch (e) {
       log(e.toString());
@@ -65,9 +62,12 @@ class AuthRepository {
   }
 
   Future<int> createStudent(StudentModel studentModel) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var teacherId = preferences.getInt('TeacherId');
     try {
       var data = {
         "name": studentModel.name,
+        'teacher_id': teacherId,
         "age": studentModel.age,
         'email': studentModel.email,
         "gender": studentModel.gender,
@@ -90,11 +90,10 @@ class AuthRepository {
     try {
       List<Map<String, dynamic>> respone =
           await networkService.getData('student_table');
-
+      log(respone.toString());
       if (respone.isEmpty) {
         return false;
       } else {
-        bool isValid = false;
         for (var res in respone) {
           if (res['email'] == studentModel.email &&
               res['password'] == studentModel.password) {
@@ -102,16 +101,37 @@ class AuthRepository {
             SharedPreferences preferences =
                 await SharedPreferences.getInstance();
             await preferences.setInt("StudentId", loggedInStudent.id!);
-            isValid = true;
-          } else {
-            isValid = false;
+            return true;
           }
         }
-        return isValid;
+        return false;
       }
     } catch (e) {
       log(e.toString());
       return false;
+    }
+  }
+
+  Future<int> studentEdit(StudentModel studentModel) async {
+    try {
+      var data = {
+        'id': studentModel.id,
+        'name': studentModel.name,
+        'email': studentModel.email,
+        'age': studentModel.age,
+        'gender': studentModel.gender,
+        'password': studentModel.password,
+        'profile_image': studentModel.profileImage
+      };
+      int response = await networkService.updateData('student_table', data);
+      if (response != null) {
+        return response;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      log(e.toString());
+      return 0;
     }
   }
 }

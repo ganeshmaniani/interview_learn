@@ -1,44 +1,69 @@
-import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:interview_learn_process/config/widgets/button.dart';
 import 'package:interview_learn_process/config/widgets/text_field.dart';
-import 'package:interview_learn_process/data/model/teacher_model/teacher_model.dart';
+import 'package:interview_learn_process/data/model/student_model/student_model.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_cubit.dart';
-import 'package:interview_learn_process/presentation/views/teacher/teacher_login.dart';
+import 'package:interview_learn_process/presentation/bloc/auth/auth_state.dart';
 
-import '../../bloc/auth/auth_state.dart';
-
-class TeacherRegisterScreen extends StatefulWidget {
-  const TeacherRegisterScreen({super.key});
+class StudentEditPage extends StatefulWidget {
+  final int id;
+  final String name;
+  final String email;
+  final String age;
+  final String gender;
+  final String password;
+  final Uint8List profileImage;
+  const StudentEditPage(
+      {super.key,
+      required this.id,
+      required this.name,
+      required this.email,
+      required this.age,
+      required this.gender,
+      required this.password,
+      required this.profileImage});
 
   @override
-  State<TeacherRegisterScreen> createState() => _TeacherRegisterScreenState();
+  State<StudentEditPage> createState() => _StudentEditPageState();
 }
 
-class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
+class _StudentEditPageState extends State<StudentEditPage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  XFile? selectedProfile;
-  String selectGender = '';
+  TextEditingController studentNameController = TextEditingController();
+  TextEditingController studentEmailController = TextEditingController();
+  TextEditingController studentPasswordController = TextEditingController();
+  DateTime? _selectedDOB;
+  int? _age;
   bool isMale = false;
   bool isFemale = false;
   bool isOthers = false;
-  DateTime? _selectDob;
-  int? _age;
+  XFile? selectedProfile;
+  @override
+  void initState() {
+    super.initState();
+    studentNameController = TextEditingController(text: widget.name);
+    studentEmailController = TextEditingController(text: widget.email);
+    studentPasswordController = TextEditingController(text: widget.password);
+    _age = int.parse(widget.age);
+    isMale = widget.gender == 'Male' ? true : false;
+    isFemale = widget.gender == 'Female' ? true : false;
+    isOthers = widget.gender == 'Others' ? true : false;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 249, 246, 246),
+        backgroundColor:
+            const Color.fromARGB(255, 252, 250, 250).withOpacity(0.9),
         appBar: AppBar(
-          title: const Text('Teacher Register'),
-        ),
+            title: const Text(
+          'Edit Student Detail',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        )),
         body: BlocConsumer<AuthCubit, AuthState>(
           builder: (context, state) {
             return SingleChildScrollView(
@@ -46,34 +71,31 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
               child: Form(
                   key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (state is AuthProfile)
+                      if (state is EditProfileImage)
                         GestureDetector(
-                          onTap: () => pickProfileImage(),
+                          onTap: () => pickImage(),
                           child: CircleAvatar(
-                              radius: 50,
-                              backgroundImage: MemoryImage(state.imageByte)),
+                            radius: 50,
+                            backgroundImage: MemoryImage(state.imageByte),
+                          ),
                         )
                       else
                         GestureDetector(
-                          onTap: () => pickProfileImage(),
-                          child: Container(
-                              height: 100,
-                              width: 100,
-                              alignment: Alignment.center,
-                              decoration: const BoxDecoration(
-                                  shape: BoxShape.circle, color: Colors.grey),
-                              child: const Icon(Icons.add_a_photo)),
-                        ),
-                      const SizedBox(height: 16),
+                            onTap: () => pickImage(),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: MemoryImage(widget.profileImage),
+                            )),
+                      const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: nameController, label: 'Name'),
-                      const SizedBox(height: 16),
+                          controller: studentNameController,
+                          label: "Student Name"),
+                      const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: emailController, label: "Email"),
-                      const SizedBox(height: 16),
+                          controller: studentEmailController,
+                          label: "Student Email"),
+                      const SizedBox(height: 8),
                       GestureDetector(
                         onTap: () => pickDob(),
                         child: Container(
@@ -90,7 +112,7 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       Container(
                           padding: const EdgeInsets.all(8),
                           width: MediaQuery.of(context).size.width,
@@ -146,47 +168,61 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                               const Text('Others'),
                             ],
                           )),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: passwordController, label: "Password"),
-                      const SizedBox(height: 16),
+                          controller: studentPasswordController,
+                          label: "Student Password"),
+                      const SizedBox(height: 32),
                       CustomButton(
-                        onTap: () {
-                          if (_formKey.currentState!.validate() &&
-                              state is AuthProfile) {
-                            TeacherModel teacherModel = TeacherModel(
-                                name: nameController.text,
-                                email: emailController.text,
-                                age: ageController.text,
-                                gender: isMale == true ? "Male" : "Female",
-                                password: passwordController.text,
-                                profileImage: state.imageByte);
-                            BlocProvider.of<AuthCubit>(context)
-                                .createTeacher(teacherModel);
-                          }
-                        },
-                        child: state is AuthLoading
-                            ? const CircularProgressIndicator(
-                                backgroundColor: Colors.white)
-                            : const Text(
-                                "Register",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                      )
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              Uint8List imageBytes = state is EditProfileImage
+                                  ? state.imageByte
+                                  : widget.profileImage;
+                              StudentModel studentModel = StudentModel(
+                                  id: widget.id,
+                                  name: studentNameController.text,
+                                  email: studentEmailController.text,
+                                  age: _age.toString(),
+                                  gender: isMale == true
+                                      ? 'Male'
+                                      : isFemale
+                                          ? 'Female'
+                                          : isOthers
+                                              ? 'Others'
+                                              : "",
+                                  profileImage: imageBytes,
+                                  password: studentPasswordController.text);
+                              BlocProvider.of<AuthCubit>(context)
+                                  .updateStudent(studentModel);
+                            }
+                          },
+                          child: state is StudentEditButtonLoading
+                              ? const CircularProgressIndicator()
+                              : const Text(
+                                  'Save',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                ))
                     ],
                   )),
             );
           },
           listener: (context, state) {
-            if (state is AuthSuccess) {
+            if (state is StudentEditSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   backgroundColor: Colors.green,
-                  content: Text('Register Successfull')));
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (ctx) => const TeacherLogin()));
+                  content: Text('Student Update Successfull')));
+              Navigator.pop(context);
             }
-            if (state is AuthFailure) {
+            if (state is StudentEditFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.red,
+                  content: Text(state.errorMessage)));
+            }
+            if (state is EditProfileFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
                   content: Text(state.errorMessage)));
@@ -195,23 +231,15 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
         ));
   }
 
-  pickProfileImage() async {
+  pickImage() async {
     final ImagePicker imagePicker = ImagePicker();
-    final _selectProfile = await imagePicker.pickImage(
+    final _selectedProfile = await imagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 20);
-    if (_selectProfile != null) {
+    if (_selectedProfile != null) {
       setState(() {
-        selectedProfile = _selectProfile;
+        selectedProfile = _selectedProfile;
       });
-      BlocProvider.of<AuthCubit>(context).pickRegisterImage(selectedProfile);
-      log("Image Selected");
-    } else {
-      log("Image Cannot Selected");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No image selected. Please select an image.'),
-        ),
-      );
+      BlocProvider.of<AuthCubit>(context).pickEditImage(selectedProfile);
     }
   }
 
@@ -223,8 +251,8 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
         lastDate: DateTime.now());
     if (pickedDate != null) {
       setState(() {
-        _selectDob = pickedDate;
-        _age = calculateAge(_selectDob!);
+        _selectedDOB = pickedDate;
+        _age = calculateAge(_selectedDOB!);
       });
     }
   }
