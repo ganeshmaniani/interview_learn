@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:interview_learn_process/core/service/base_db_service.dart';
 import 'package:interview_learn_process/data/model/student_model/student_model.dart';
 import 'package:interview_learn_process/data/model/teacher_model/teacher_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/service/network_db_service.dart';
 
@@ -44,10 +45,13 @@ class AuthRepository {
         for (var res in respone) {
           if (res['email'] == teacherModel.email &&
               res["password"] == teacherModel.password) {
-            // preferences.setInt("TeacherId", res['id']);
+            TeacherModel loggedInTeacher = TeacherModel.fromJson(res);
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            await preferences.setInt("StudentId", loggedInTeacher.id!);
             isValid = true;
 
-            log('Teacher ID saved: ${res['id']}');
+            log('Teacher ID saved: ${loggedInTeacher.id.toString()}');
           } else {
             isValid = false;
           }
@@ -94,6 +98,10 @@ class AuthRepository {
         for (var res in respone) {
           if (res['email'] == studentModel.email &&
               res['password'] == studentModel.password) {
+            StudentModel loggedInStudent = StudentModel.fromJson(res);
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            await preferences.setInt("StudentId", loggedInStudent.id!);
             isValid = true;
           } else {
             isValid = false;
