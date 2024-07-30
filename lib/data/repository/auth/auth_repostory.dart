@@ -48,7 +48,7 @@ class AuthRepository {
             TeacherModel loggedInTeacher = TeacherModel.fromJson(res);
             SharedPreferences preferences =
                 await SharedPreferences.getInstance();
-            await preferences.setInt("StudentId", loggedInTeacher.id!);
+            await preferences.setInt("TeacherId", loggedInTeacher.id!);
             isValid = true;
 
             log('Teacher ID saved: ${loggedInTeacher.id.toString()}');

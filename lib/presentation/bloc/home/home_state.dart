@@ -39,3 +39,10 @@ class EmptyStudentList extends HomeState {
   @override
   List<Object?> get props => [errormessage];
 }
+
+class StudentDetail extends HomeState {
+  final StudentModel studentModel;
+  StudentDetail({required this.studentModel});
+  @override
+  List<Object?> get props => [studentModel];
+}

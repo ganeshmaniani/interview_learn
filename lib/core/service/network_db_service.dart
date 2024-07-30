@@ -44,4 +44,10 @@ class NetWorkDBService extends BaseDBService {
     return await connection!
         .update(table, data, where: "id = ?", whereArgs: [data['id']]);
   }
+
+  @override
+  Future getDataById(table, itemId) async {
+    var connection = await database;
+    return await connection!.query(table,where: 'id = ?',whereArgs:[itemId] );
+  }
 }

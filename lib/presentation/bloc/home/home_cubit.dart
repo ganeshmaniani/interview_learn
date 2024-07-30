@@ -35,4 +35,9 @@ class HomeCubit extends Cubit<HomeState> {
       emit(EmptyStudentList(errormessage: e.toString()));
     }
   }
+
+  initialCallDetail(dynamic id) async {
+    StudentModel studentModel = await homeRepository.getSingleTeacherDetail(id);
+    emit(StudentDetail(studentModel: studentModel));
+  }
 }

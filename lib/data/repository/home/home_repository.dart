@@ -58,4 +58,30 @@ class HomeRepository {
       return 0;
     }
   }
+
+  Future<StudentModel> getSingleTeacherDetail(dynamic id) async {
+    StudentModel studentModel = StudentModel();
+    try {
+      List<Map<String, dynamic>> response =
+          await networkService.getDataById('student_table', id);
+
+      if (response.isEmpty) {
+        return studentModel;
+      } else {
+        for (var res in response) {
+          studentModel.id = res['id'];
+          studentModel.name = res['name'];
+          studentModel.email = res['email'];
+          studentModel.age = res['age'];
+          studentModel.gender = res['gender'];
+          studentModel.profileImage = res['profile_image'];
+          studentModel.password = res['password'];
+        }
+        return studentModel;
+      }
+    } catch (e) {
+      log(e.toString());
+      return studentModel;
+    }
+  }
 }
