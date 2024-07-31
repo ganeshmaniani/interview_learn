@@ -5,24 +5,21 @@ class CustomTextFormField extends StatelessWidget {
   final String label;
   final IconData? icon;
   final Function()? onPressed;
+  final String? Function(String?) validator;
   const CustomTextFormField(
       {super.key,
       required this.controller,
       required this.label,
       this.icon,
-      this.onPressed});
+      this.onPressed,
+      required this.validator});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       maxLines: 1,
       controller: controller,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return "Enter a $label";
-        }
-        return null;
-      },
+      validator: validator,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,

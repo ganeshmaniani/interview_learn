@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:interview_learn_process/core/validator/validator.dart';
 import 'package:interview_learn_process/presentation/bloc/home/home_cubit.dart';
 import 'package:interview_learn_process/presentation/bloc/home/home_state.dart';
 
@@ -35,7 +36,7 @@ class TeacherEditPage extends StatefulWidget {
   State<TeacherEditPage> createState() => _TeacherEditPageState();
 }
 
-class _TeacherEditPageState extends State<TeacherEditPage> {
+class _TeacherEditPageState extends State<TeacherEditPage> with InputValidator {
   final GlobalKey<FormState> _formKey = GlobalKey();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -113,10 +114,28 @@ class _TeacherEditPageState extends State<TeacherEditPage> {
                           ),
                     const SizedBox(height: 16),
                     CustomTextFormField(
-                        controller: nameController, label: 'Name'),
+                      controller: nameController,
+                      label: 'Name',
+                      validator: (name) {
+                        if (isCheckTextFieldEmpty(name!)) {
+                          return null;
+                        } else {
+                          return 'Enter a name';
+                        }
+                      },
+                    ),
                     const SizedBox(height: 16),
                     CustomTextFormField(
-                        controller: emailController, label: "Email"),
+                      controller: emailController,
+                      label: "Email",
+                      validator: (email) {
+                        if (isEmailValid(email!)) {
+                          return null;
+                        } else {
+                          return 'Enter a email address';
+                        }
+                      },
+                    ),
                     const SizedBox(height: 16),
                     GestureDetector(
                       onTap: () => pickDob(),
@@ -192,7 +211,16 @@ class _TeacherEditPageState extends State<TeacherEditPage> {
                         )),
                     const SizedBox(height: 16),
                     CustomTextFormField(
-                        controller: passwordController, label: "Password"),
+                      controller: passwordController,
+                      label: "Password",
+                      validator: (password) {
+                        if (isPasswordValid(password!)) {
+                          return null;
+                        } else {
+                          return 'Password should be 8 character';
+                        }
+                      },
+                    ),
                     const SizedBox(height: 16),
                     CustomButton(
                       onTap: () async {

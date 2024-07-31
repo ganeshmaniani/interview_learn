@@ -20,6 +20,28 @@ class AuthFailure extends AuthState {
   List<Object?> get props => [errorMessage];
 }
 
+class LoginButtonLoading extends AuthState {}
+
+class LoginSuccess extends AuthState {}
+
+class LoginFailure extends AuthState {
+  final String errorMessage;
+  LoginFailure({required this.errorMessage});
+  @override
+  List<Object?> get props => [errorMessage];
+}
+
+class RegisterButtonLoading extends AuthState {}
+
+class RegisterSuccess extends AuthState {}
+
+class RegisterFailure extends AuthState {
+  final String errorMessage;
+  RegisterFailure({required this.errorMessage});
+  @override
+  List<Object?> get props => [errorMessage];
+}
+
 class AuthProfile extends AuthState {
   final Uint8List imageByte;
   AuthProfile({required this.imageByte});

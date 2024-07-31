@@ -33,7 +33,6 @@ class AuthRepository {
   }
 
   Future<bool> teacherLogin(TeacherModel teacherModel) async {
-    // SharedPreferences preferences = await SharedPreferences.getInstance();
     try {
       List<Map<String, dynamic>> respone =
           await networkService.getData('teacher_table');
@@ -113,9 +112,12 @@ class AuthRepository {
   }
 
   Future<int> studentEdit(StudentModel studentModel) async {
+    // SharedPreferences preferences = await SharedPreferences.getInstance();
+    // var teacherId = preferences.getInt('TeacherId');
     try {
       var data = {
         'id': studentModel.id,
+        // 'teacher_id': teacherId,
         'name': studentModel.name,
         'email': studentModel.email,
         'age': studentModel.age,

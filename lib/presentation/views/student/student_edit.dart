@@ -9,6 +9,8 @@ import 'package:interview_learn_process/data/model/student_model/student_model.d
 import 'package:interview_learn_process/presentation/bloc/auth/auth_cubit.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_state.dart';
 
+import '../../../core/validator/validator.dart';
+
 class StudentEditPage extends StatefulWidget {
   final int id;
   final String name;
@@ -31,7 +33,7 @@ class StudentEditPage extends StatefulWidget {
   State<StudentEditPage> createState() => _StudentEditPageState();
 }
 
-class _StudentEditPageState extends State<StudentEditPage> {
+class _StudentEditPageState extends State<StudentEditPage> with InputValidator {
   final GlobalKey<FormState> _formKey = GlobalKey();
   TextEditingController studentNameController = TextEditingController();
   TextEditingController studentEmailController = TextEditingController();
@@ -89,12 +91,28 @@ class _StudentEditPageState extends State<StudentEditPage> {
                             )),
                       const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: studentNameController,
-                          label: "Student Name"),
+                        controller: studentNameController,
+                        label: "Student Name",
+                        validator: (name) {
+                          if (isCheckTextFieldEmpty(name!)) {
+                            return null;
+                          } else {
+                            return 'Enter a name';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: studentEmailController,
-                          label: "Student Email"),
+                        controller: studentEmailController,
+                        label: "Student Email",
+                        validator: (email) {
+                          if (isEmailValid(email!)) {
+                            return null;
+                          } else {
+                            return 'Enter a email address';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 8),
                       GestureDetector(
                         onTap: () => pickDob(),
@@ -170,8 +188,16 @@ class _StudentEditPageState extends State<StudentEditPage> {
                           )),
                       const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: studentPasswordController,
-                          label: "Student Password"),
+                        controller: studentPasswordController,
+                        label: "Student Password",
+                        validator: (password) {
+                          if (isPasswordValid(password!)) {
+                            return null;
+                          } else {
+                            return 'Password should be 8 character';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 32),
                       CustomButton(
                           onTap: () {

@@ -13,30 +13,30 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit({required this.authRepository}) : super(AuthInitial());
 
   createTeacher(TeacherModel teacherModel) async {
-    emit(AuthLoading());
+    emit(RegisterButtonLoading());
     try {
       int response = await authRepository.createTeacher(teacherModel);
       if (response != 0) {
-        emit(AuthSuccess());
+        emit(RegisterSuccess());
       } else {
-        emit(AuthFailure(errorMessage: 'User Cannot added'));
+        emit(RegisterFailure(errorMessage: 'User Cannot added'));
       }
     } catch (e) {
-      emit(AuthFailure(errorMessage: e.toString()));
+      emit(RegisterFailure(errorMessage: e.toString()));
     }
   }
 
   loginTecher(TeacherModel teacherModel) async {
-    emit(AuthLoading());
+    emit(LoginButtonLoading());
     try {
       bool response = await authRepository.teacherLogin(teacherModel);
       if (response == true) {
-        emit(AuthSuccess());
+        emit(LoginSuccess());
       } else {
-        emit(AuthFailure(errorMessage: "Login Failed"));
+        emit(LoginFailure(errorMessage: "Login Failed"));
       }
     } catch (e) {
-      emit(AuthFailure(errorMessage: e.toString()));
+      emit(LoginFailure(errorMessage: e.toString()));
     }
   }
 
@@ -55,16 +55,16 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   studentLogin(StudentModel studentModel) async {
-    emit(AuthLoading());
+    emit(LoginButtonLoading());
     try {
       bool response = await authRepository.studentLogin(studentModel);
       if (response == true) {
-        emit(AuthSuccess());
+        emit(LoginSuccess());
       } else {
-        emit(AuthFailure(errorMessage: "Login Failed"));
+        emit(LoginFailure(errorMessage: "Login Failed"));
       }
     } catch (e) {
-      emit(AuthFailure(errorMessage: e.toString()));
+      emit(LoginFailure(errorMessage: e.toString()));
     }
   }
 

@@ -8,6 +8,7 @@ abstract class BaseDBService {
   Future<dynamic> getData(table);
 
   Future<dynamic> getDataById(table, itemId);
+  
   Future<dynamic> getStudentDataById(table, itemId);
 
   Future<dynamic> updateData(table, Map<String, dynamic> data);

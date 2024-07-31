@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:interview_learn_process/config/widgets/button.dart';
 import 'package:interview_learn_process/config/widgets/text_field.dart';
+import 'package:interview_learn_process/core/validator/validator.dart';
 import 'package:interview_learn_process/data/model/student_model/student_model.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_cubit.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_state.dart';
@@ -14,7 +15,7 @@ class StudentLogin extends StatefulWidget {
   State<StudentLogin> createState() => _StudentLoginState();
 }
 
-class _StudentLoginState extends State<StudentLogin> {
+class _StudentLoginState extends State<StudentLogin> with InputValidator {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController studentEmailController = TextEditingController();
@@ -38,21 +39,52 @@ class _StudentLoginState extends State<StudentLogin> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomTextFormField(
-                          controller: studentEmailController, label: "Email"),
+                        controller: studentEmailController,
+                        label: "Email",
+                        validator: (email) {
+                          if (isEmailValid(email!)) {
+                            return null;
+                          } else {
+                            return 'Enter a email address';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
-                          controller: studentPasswordController,
-                          label: "Password"),
+                        controller: studentPasswordController,
+                        label: "Password",
+                        validator: (password) {
+                          if (isPasswordValid(password!)) {
+                            return null;
+                          } else {
+                            return 'Password should be 8 character';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 32),
                       CustomButton(
                           onTap: () {
-                            StudentModel studentModel = StudentModel(
-                                email: studentEmailController.text,
-                                password: studentPasswordController.text);
-                            BlocProvider.of<AuthCubit>(context)
-                                .studentLogin(studentModel);
+                            if (_formKey.currentState!.validate()) {
+                              StudentModel studentModel = StudentModel(
+                                  email: studentEmailController.text,
+                                  password: studentPasswordController.text);
+                              BlocProvider.of<AuthCubit>(context)
+                                  .studentLogin(studentModel);
+                              if (state is LoginSuccess) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        content: Text('Login Successfully..')));
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const StudentViewPage()),
+                                    (route) => false);
+                              }
+                            }
                           },
-                          child: state is AuthLoading
+                          child: state is LoginButtonLoading
                               ? const CircularProgressIndicator()
                               : const Text(
                                   'Login',
@@ -63,17 +95,7 @@ class _StudentLoginState extends State<StudentLogin> {
             );
           },
           listener: (context, state) {
-            if (state is AuthSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: Colors.green,
-                  content: Text('Login Successfully..')));
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const StudentViewPage()),
-                  (route) => false);
-            }
-            if (state is AuthFailure) {
+            if (state is LoginFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
                   content: Text(state.errorMessage)));

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:interview_learn_process/config/widgets/button.dart';
 import 'package:interview_learn_process/config/widgets/text_field.dart';
+import 'package:interview_learn_process/core/validator/validator.dart';
 import 'package:interview_learn_process/data/model/teacher_model/teacher_model.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_cubit.dart';
 import 'package:interview_learn_process/presentation/views/teacher/teacher_login.dart';
@@ -18,7 +19,8 @@ class TeacherRegisterScreen extends StatefulWidget {
   State<TeacherRegisterScreen> createState() => _TeacherRegisterScreenState();
 }
 
-class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
+class _TeacherRegisterScreenState extends State<TeacherRegisterScreen>
+    with InputValidator {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -69,10 +71,28 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                         ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
-                          controller: nameController, label: 'Name'),
+                        controller: nameController,
+                        label: 'Name',
+                        validator: (name) {
+                          if (isCheckTextFieldEmpty(name!)) {
+                            return null;
+                          } else {
+                            return 'Enter a name';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
-                          controller: emailController, label: "Email"),
+                        controller: emailController,
+                        label: "Email",
+                        validator: (email) {
+                          if (isEmailValid(email!)) {
+                            return null;
+                          } else {
+                            return 'Enter a email address';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 16),
                       GestureDetector(
                         onTap: () => pickDob(),
@@ -148,7 +168,16 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                           )),
                       const SizedBox(height: 16),
                       CustomTextFormField(
-                          controller: passwordController, label: "Password"),
+                        controller: passwordController,
+                        label: "Password",
+                        validator: (password) {
+                          if (isPasswordValid(password!)) {
+                            return null;
+                          } else {
+                            return 'Password should be 8 character';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 16),
                       CustomButton(
                         onTap: () {
@@ -165,7 +194,7 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
                                 .createTeacher(teacherModel);
                           }
                         },
-                        child: state is AuthLoading
+                        child: state is RegisterButtonLoading
                             ? const CircularProgressIndicator(
                                 backgroundColor: Colors.white)
                             : const Text(
@@ -179,14 +208,14 @@ class _TeacherRegisterScreenState extends State<TeacherRegisterScreen> {
             );
           },
           listener: (context, state) {
-            if (state is AuthSuccess) {
+            if (state is RegisterSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   backgroundColor: Colors.green,
                   content: Text('Register Successfull')));
               Navigator.push(context,
                   MaterialPageRoute(builder: (ctx) => const TeacherLogin()));
             }
-            if (state is AuthFailure) {
+            if (state is RegisterFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
                   content: Text(state.errorMessage)));

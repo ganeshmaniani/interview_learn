@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:interview_learn_process/config/widgets/button.dart';
 import 'package:interview_learn_process/config/widgets/text_field.dart';
+import 'package:interview_learn_process/core/validator/validator.dart';
 import 'package:interview_learn_process/data/model/student_model/student_model.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_cubit.dart';
 import 'package:interview_learn_process/presentation/bloc/auth/auth_state.dart';
@@ -14,7 +15,7 @@ class AddStudentPage extends StatefulWidget {
   State<AddStudentPage> createState() => _AddStudentPageState();
 }
 
-class _AddStudentPageState extends State<AddStudentPage> {
+class _AddStudentPageState extends State<AddStudentPage> with InputValidator {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController studentNameController = TextEditingController();
   final TextEditingController studentEmailController = TextEditingController();
@@ -71,12 +72,28 @@ class _AddStudentPageState extends State<AddStudentPage> {
                         ),
                       const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: studentNameController,
-                          label: "Student Name"),
+                        controller: studentNameController,
+                        label: "Student Name",
+                        validator: (name) {
+                          if (isCheckTextFieldEmpty(name!)) {
+                            return null;
+                          } else {
+                            return 'Enter a name';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: studentEmailController,
-                          label: "Student Email"),
+                        controller: studentEmailController,
+                        label: "Student Email",
+                        validator: (email) {
+                          if (isEmailValid(email!)) {
+                            return null;
+                          } else {
+                            return 'Enter a email address';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 8),
                       GestureDetector(
                         onTap: () => pickDob(),
@@ -152,8 +169,16 @@ class _AddStudentPageState extends State<AddStudentPage> {
                           )),
                       const SizedBox(height: 8),
                       CustomTextFormField(
-                          controller: studentPasswordController,
-                          label: "Student Password"),
+                        controller: studentPasswordController,
+                        label: "Student Password",
+                        validator: (password) {
+                          if (isPasswordValid(password!)) {
+                            return null;
+                          } else {
+                            return 'Password should be 8 character';
+                          }
+                        },
+                      ),
                       const SizedBox(height: 32),
                       CustomButton(
                           onTap: () {
@@ -174,13 +199,6 @@ class _AddStudentPageState extends State<AddStudentPage> {
                                   password: studentPasswordController.text);
                               BlocProvider.of<AuthCubit>(context)
                                   .createStudent(studentModel);
-                              if (state is AuthSuccess) {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Student Add Successfull')));
-                              }
                             }
                           },
                           child: state is AuthLoading
@@ -196,7 +214,18 @@ class _AddStudentPageState extends State<AddStudentPage> {
                   )),
             );
           },
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is AuthSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  backgroundColor: Colors.green,
+                  content: Text('Student Add Successfull')));
+              Navigator.of(context).pop();
+            }
+            if (state is AuthFailure) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+            }
+          },
         ));
   }
 

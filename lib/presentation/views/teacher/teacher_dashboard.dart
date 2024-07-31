@@ -38,7 +38,8 @@ class _TeacherHomeState extends State<TeacherHome> {
         floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const AddStudentPage()));
+                      MaterialPageRoute(builder: (_) => const AddStudentPage()))
+                  .whenComplete(() => initTeacherDetail());
             },
             label: const Row(
               children: [Text('Add Student'), Icon(Icons.add)],

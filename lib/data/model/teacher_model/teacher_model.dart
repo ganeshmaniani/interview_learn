@@ -27,14 +27,4 @@ class TeacherModel {
     password = json['password'];
     profileImage = json["profile_image"];
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "age": age,
-      "gender": gender,
-      "profile_image": profileImage,
-    };
-  }
 }
